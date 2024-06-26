@@ -128,6 +128,47 @@ public class CompareStringsByFrequency {
         return left;
     }
 
+    // Approach 3: Optimized with Precomputation
+    public static int[] numSmallerByFrequencyPrecomputed(String[] queries, String[] words) {
+        int[] min = new int[12];  // Since f(s) is in the range [1, 10]
+        int[] result = new int[queries.length];
+        
+        // Compute frequency of the smallest character for words and store in min array
+        for (String word : words) {
+            min[count(word)]++;
+        }
+
+        // Accumulate counts in min array
+        for (int i = 9; i >= 1; i--) {
+            min[i] += min[i + 1];
+        }
+
+        // Compute result for each query using precomputed min array
+        for (int i = 0; i < queries.length; i++) {
+            int f = count(queries[i]);
+            result[i] = min[f + 1];
+        }
+
+        return result;
+    }
+
+    // Helper function to compute the frequency of the smallest character
+    public static int count(String s) {
+        char min = s.charAt(0);
+        int freq = 1;
+        for (int i = 1; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c > min) continue;
+            if (c < min) {
+                min = c;
+                freq = 1;
+            } else {
+                freq++;
+            }
+        }
+        return freq;
+    }
+
     public static void main(String[] args) {
         String[] queries = {"cbd", "bbb", "cc"};
         String[] words = {"zaaaz", "a", "aa", "aaa", "aaaa"};
@@ -146,5 +187,14 @@ public class CompareStringsByFrequency {
         for (int res : resultOptimized) {
             System.out.print(res + " ");
         }
+        System.out.println();
+
+        // Using the precomputation approach
+        int[] resultPrecomputed = numSmallerByFrequencyPrecomputed(queries, words);
+        System.out.print("Precomputation Approach Results: ");
+        for (int res : resultPrecomputed) {
+            System.out.print(res + " ");
+        }
+        System.out.println();
     }
 }
